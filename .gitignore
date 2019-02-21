@@ -1,0 +1,10 @@
+# python
+.idea/
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Environments
+venv/
