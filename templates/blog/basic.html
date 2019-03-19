@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block head %} <title>mushan's blog</title> {% endblock %}
+    <link rel="icon" href="{% static 'images/icon.ico' %}" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    {% block CSS %}{% endblock %}
+    <style>
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+        body {padding-bottom: 50px;}
+        img {max-width: 100%;}
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #F8F8F8;
+            font-size: 13px;
+            text-align: center;
+            padding-top: 14px;
+            padding-bottom: 14px;
+            border-top: 3px solid #E7E7E7;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" style="margin-left: 12rem;" href="/blog">木杉博客</a>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#search-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="search-navbar-collapse">
+                    <form class="navbar-form navbar-right" action="{% url 'search' %}" method="get">
+                         <div class="input-group">
+                            <input type="text" class="form-control" name="key" placeholder="Search">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        {% block content %} 内容 {% endblock %}
+    </div>
+    <footer>
+        <span>© 2019 mushan's blog. All Rights Reserved.</span>
+    </footer>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    {% block JS %}{% endblock %}
+</body>
+</html>

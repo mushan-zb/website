@@ -1,9 +1,10 @@
 # python
 .idea/
+*/migrations/*_initial.py
+__pycache__/
 
 # Django stuff:
-*.log
-local_settings.py
+website/settings.py
 db.sqlite3
 
 # Environments

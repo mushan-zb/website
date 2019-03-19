@@ -1,0 +1,30 @@
+{% extends 'blog/basic.html' %}
+{% block content %}
+    <div class="container">
+        <div class="col-md-9">
+            {% for article in context.object_list %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <a href="{% url 'article' article.pk %}">{{ article.title }}</a>
+                        {% for tag in article.label.all %}
+                        <span class="label label-info pull-right hidden-md">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <p>{{ article.content|striptags|truncatechars:300 }}</p>
+                </div>
+                <div class="panel-footer">
+                    <a class="btn" href="{% url 'article' article.pk %}">进入阅读 »</a>
+                    <span class="btn pull-right">浏览量：{{ article.view }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% include 'blog/pagination.html' %}
+        </div>
+        <div class="col-md-3">
+            pass
+        </div>
+    </div>
+{% endblock %}

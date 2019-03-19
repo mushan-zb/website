@@ -1,0 +1,19 @@
+<ul class="pagination">
+    {% if context.has_previous %}
+    <li><a href="{% url 'page' context.previous_page_number %}">&laquo;</a></li>
+    {% else %}
+    <li class="disabled"><a>&laquo;</a></li>
+    {% endif %}
+    {% for page_number in context.page_range %}
+    {% if page_number != context.number %}
+    <li><a href="{% url 'page' page_number %}">{{ page_number }}</a></li>
+    {% else %}
+    <li class="active"><a>{{ page_number }}</a></li>
+    {% endif %}
+    {% endfor %}
+    {% if context.has_next %}
+    <li><a href="{% url 'page' context.next_page_number %}">&raquo;</a></li>
+    {% else %}
+    <li class="disabled"><a>&raquo;</a></li>
+    {% endif %}
+</ul>
