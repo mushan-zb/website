@@ -1,0 +1,12 @@
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title" style="font-weight: bold;">最新文章</h3>
+    </div>
+    <ul class="list-group">
+        {% for title in hot_news %}
+        <li class="list-group-item">
+            <a href="{% url 'article' title.pk %}">{{ title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

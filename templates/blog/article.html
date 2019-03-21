@@ -1,22 +1,25 @@
 {% extends 'blog/basic.html' %}
+{% load static %}
 {% block head %}
     <title>文章详情</title>
 {% endblock %}
 {% block content %}
     <div class="container">
-        <div class="col-md-9">
+        <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="panel-title text-center">
-                        <strong class="text-primary" style="font-size: 20px">{{ article.title }}</strong>
+                        <strong class="text-primary" style="font-size: 28px">{{ article.title }}</strong>
                     </div>
                     <div class="text-center">
-                        <span class="glyphicon glyphicon-time"></span>&nbsp{{ article.modify_time|date:"Y年m月d日" }}&nbsp&nbsp&nbsp
-                        <span class="glyphicon glyphicon-tags"></span>&nbsp
+                        <span class="glyphicon glyphicon-calendar"></span>&nbsp;{{ article.modify_time|date:"Y年m月d日" }}&nbsp;&nbsp;&nbsp;
+                        <span class="glyphicon glyphicon-tags"></span>&nbsp;
                         {% for tag in article.label.all %}
-                            {{ tag }}
+                            <a href="{% url 'category' tag.slug %}">{{ tag }}</a>
                             {% if not forloop.last %} | {% endif %}
                         {% endfor %}
+                        &nbsp;&nbsp;&nbsp;
+                        <span class="glyphicon glyphicon-eye-open"></span>&nbsp;{{ article.view }}
                     </div>
                 </div>
                 <div class="panel-body">
@@ -37,8 +40,28 @@
             </div>
             <div>评论区</div>
         </div>
-        <div class="col-md-3 hidden-sm hidden-xs">
-            pass
+        <div class="col-md-4 hidden-sm hidden-xs">
+            {% include 'blog/hot_news.html' %}
+            {% include 'blog/label_cloud.html' %}
         </div>
     </div>
+{% endblock %}
+{% block JS %}
+<script src="{% static 'blog/js/tags_cloud.js' %}"></script>
+<script type="text/javascript">
+    window.onload = function() {
+        try {
+            TagCanvas.Start('myCanvas','tags',{
+                textColour: '#000000',
+                outlineColour: '#ff00ff',
+                reverse: false,
+                depth: 0.5,
+                maxSpeed: 0.05
+          });
+        } catch(e) {
+            // something went wrong, hide the canvas container
+            document.getElementById('panel_tags').style.display = 'none';
+        }
+    };
+</script>
 {% endblock %}

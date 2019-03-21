@@ -1,0 +1,18 @@
+{% load static %}
+<div class="panel panel-info hidden-sm hidden-xs" id="panel_tags">
+    <div class="panel-heading">
+        <h3 class="panel-title" style="font-weight: bold">标签云</h3>
+    </div>
+    <div>
+        <canvas width="350" height="350" id="myCanvas">
+            <p>标签云，您的浏览器版本不支持</p>
+        </canvas>
+    </div>
+    <div id="tags">
+        <ul>
+            {% for label in label_list %}
+                <li><a class="tag" href="{% url 'category' label.slug %}">{{ label.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
