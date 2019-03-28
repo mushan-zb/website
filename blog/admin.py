@@ -30,7 +30,7 @@ class ArticleAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('title', 'content', 'label'),
         }),
-        ('设置', {
+        (None, {
             'fields': ('view', 'status')
         })
     )

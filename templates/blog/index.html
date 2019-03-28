@@ -29,10 +29,23 @@
         <div class="col-md-4">
             {% include 'blog/hot_news.html' %}
             {% include 'blog/label_cloud.html' %}
+            <div style="display: none;" id="rocket-to-top">
+                <div style="opacity:0; display: block;" class="level-2"></div>
+                <div class="level-3"></div>
+            </div>
         </div>
     </div>
 {% endblock %}
+{% block CSS %}
+<link rel="stylesheet" type="text/css" href="{% static 'blog/css/rocket.css' %}" />
+<style>
+    div.affix {
+        top: 20px;
+    }
+</style>
+{% endblock %}
 {% block JS %}
+<script src="{% static 'blog/js/rocket.js' %}"></script>
 <script src="{% static 'blog/js/tags_cloud.js' %}"></script>
 <script type="text/javascript">
     window.onload = function() {

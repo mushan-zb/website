@@ -6,7 +6,7 @@
 """
 
 from django.urls import path
-from .views import index, search, article, category
+from .views import index, search, article, category, publish_comment
 
 urlpatterns = [
     path('', index, name='index'),
@@ -14,6 +14,7 @@ urlpatterns = [
     path('article/<int:pk>', article, name='article'),
     path('category/<slug:slug>', category, name='category'),
     path('category/<slug:slug>/<int:pk>', category, name='category'),
+    path('publish_comment/', publish_comment, name='publish_comment'),
     path('search/', search, name='search'),
     path('search/<int:page>', search, name='search')
 ]

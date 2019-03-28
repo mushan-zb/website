@@ -1,7 +1,8 @@
 # python
 .idea/
-*/migrations/*_initial.py
 __pycache__/
+*/migrations/00*.py
+
 
 # Django stuff:
 website/settings.py
@@ -9,3 +10,9 @@ db.sqlite3
 
 # Environments
 venv/
+
+# static
+media/uploads
+static/bootstrap.min.css
+static/bootstrap.min.js
+static/jquery-3.3.1.min.js

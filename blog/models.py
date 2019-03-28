@@ -1,5 +1,7 @@
 from django.db import models
 
+from mdeditor.fields import MDTextField
+
 # Create your models here.
 
 
@@ -18,13 +20,13 @@ class BaseModel(models.Model):
 
 class ArticleModel(BaseModel):
     title = models.CharField(verbose_name='标题', max_length=100, unique=True)
-    content = models.TextField(verbose_name='内容')
+    content = MDTextField(verbose_name='内容')
     label = models.ManyToManyField(verbose_name='标签', to='LabelModel')
     view = models.IntegerField(verbose_name='浏览量', default=0)
 
     class Meta:
         verbose_name = verbose_name_plural = '文章'
-        ordering = ['-modify_time']
+        ordering = ['-modify_time']     # 逆序排序
 
     def __str__(self):
         return self.title
@@ -35,11 +37,11 @@ class ArticleModel(BaseModel):
 
     def next_article(self):
         """获取下一篇文章"""
-        return ArticleModel.objects.get(pk__gt=self.pk, status=True)
+        return ArticleModel.objects.filter(pk__gt=self.pk, status=True).reverse().first()
 
     def previous_article(self):
         """获取上一篇文章"""
-        return ArticleModel.objects.get(pk__lt=self.pk, status=True)
+        return ArticleModel.objects.filter(pk__lt=self.pk, status=True).first()
 
 
 class LabelModel(BaseModel):
@@ -58,13 +60,10 @@ class CommentModel(BaseModel):
     email = models.EmailField(verbose_name='邮箱', max_length=30)
     content = models.TextField(verbose_name='内容')
     article = models.ForeignKey(verbose_name='文章', to='ArticleModel', on_delete=models.CASCADE)
-    reply = models.ForeignKey(verbose_name='回复', to='CommentModel', on_delete=models.CASCADE)
+    reply = models.ForeignKey(verbose_name='回复', to='CommentModel', on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name = verbose_name_plural = '评论'
 
     def __str__(self):
         return self.name
-
-    def get_reply(self):
-        pass

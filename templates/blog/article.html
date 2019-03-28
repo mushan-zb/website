@@ -4,49 +4,95 @@
     <title>文章详情</title>
 {% endblock %}
 {% block content %}
-    <div class="container">
+    <div class="container" data-spy="scroll" data-offset-top="0" data-toggle="#comment_editor">
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="panel-title text-center">
-                        <strong class="text-primary" style="font-size: 28px">{{ article.title }}</strong>
+                        <strong class="text-primary" style="font-size: 28px">{{ article_info.title }}</strong>
                     </div>
                     <div class="text-center">
-                        <span class="glyphicon glyphicon-calendar"></span>&nbsp;{{ article.modify_time|date:"Y年m月d日" }}&nbsp;&nbsp;&nbsp;
+                        <span class="glyphicon glyphicon-calendar"></span>&nbsp;{{ article_info.modify_time|date:"Y年m月d日" }}&nbsp;&nbsp;&nbsp;
                         <span class="glyphicon glyphicon-tags"></span>&nbsp;
-                        {% for tag in article.label.all %}
+                        {% for tag in article_info.label.all %}
                             <a href="{% url 'category' tag.slug %}">{{ tag }}</a>
                             {% if not forloop.last %} | {% endif %}
                         {% endfor %}
                         &nbsp;&nbsp;&nbsp;
-                        <span class="glyphicon glyphicon-eye-open"></span>&nbsp;{{ article.view }}
+                        <span class="glyphicon glyphicon-eye-open"></span>&nbsp;{{ article_info.view }}
                     </div>
                 </div>
                 <div class="panel-body">
-                    {{ article.content|safe }}
+                    {{ article_info.content|safe }}
                 </div>
                 <div class="panel-footer">
-                    {% if article.previous_article %}
-                        <div class="text-left">
-                            <strong>上一篇：<a href="{% url 'article' article.previous_article.pk %}">{{ article.previous_article }}</a> </strong>
-                        </div>
+                    {% if previous_article %}
+                    <strong>上一篇：<a href="{% url 'article' previous_article.pk %}">{{ previous_article }}</a> </strong>
+                    {% else %}
+                        <strong>&nbsp;</strong>
                     {% endif %}
-                    {% if article.next_article %}
-                        <div class="text-right">
-                            <strong>下一篇：<a href="{% url 'article' article.next_article.pk %}">{{ article.next_article }}</a></strong>
-                        </div>
+                    {% if next_article %}
+                    <strong class="pull-right">下一篇：<a href="{% url 'article' next_article.pk %}">{{ next_article }}</a></strong>
                     {% endif %}
                 </div>
             </div>
-            <div>评论区</div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <button class="btn btn-info pull-right" data-toggle="modal" data-target="#comment_editor">快速评论</button>
+                    <strong class="panel-title" style="font-size: 25px; color: #337AB7">评论区</strong>
+                </div>
+                {% for comment in comment_list %}
+                    {% if comment.reply == None %}
+                        {% if not forloop.first %}
+                        </ul>
+                        {% endif %}
+                        <ul class="list-group">
+                            <li class="list-group-item active">
+                                {{ comment.name }}：{{ comment.content }} &nbsp; ({{ comment.modify_time }})
+                                 <button class="label label-info" onclick="reply('{{ comment.name }}',{{ comment.pk }})">回复</button>
+                            </li>
+                    {% else %}
+                        <li class="list-group-item">
+                            {{ comment.name }} &nbsp; >>> &nbsp; {{ comment.reply.name }}：{{ comment.content }} &nbsp; ({{ comment.modify_time }})
+                            <button class="label label-success" onclick="reply('{{ comment.name }}',{{ comment.id }})">回复</button>
+                        </li>
+                    {% endif %}
+                    {% if forloop.last %}
+                        </ul>
+                    {% endif %}
+                    {% empty %}
+                    <div class="panel-body text-center">
+                        <h3>暂无评论，赶紧抢占沙发吧！点击右上角发布第一条评论</h3>
+                    </div>
+                {% endfor %}
+            </div>
+        {% include 'blog/comment_editor.html' %}
         </div>
         <div class="col-md-4 hidden-sm hidden-xs">
             {% include 'blog/hot_news.html' %}
             {% include 'blog/label_cloud.html' %}
+            <div style="display: none;" id="rocket-to-top">
+                <div style="opacity:0;display: block;" class="level-2"></div>
+                <div class="level-3"></div>
+            </div>
         </div>
     </div>
 {% endblock %}
+{% block CSS %}
+<link rel="stylesheet" href="{% static 'blog/css/code.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'blog/css/rocket.css' %}" />
+<style>
+    div.affix {
+        top: 20px;
+    }
+    ul li.active{
+        background-color: #D9EDF7 !important;
+        color: #1B2B8F !important;
+    }
+</style>
+{% endblock %}
 {% block JS %}
+<script src="{% static 'blog/js/rocket.js' %}"></script>
 <script src="{% static 'blog/js/tags_cloud.js' %}"></script>
 <script type="text/javascript">
     window.onload = function() {
@@ -59,9 +105,67 @@
                 maxSpeed: 0.05
           });
         } catch(e) {
-            // something went wrong, hide the canvas container
             document.getElementById('panel_tags').style.display = 'none';
         }
     };
+</script>
+<script>
+    function reply(comment_name, comment_id) {
+        $('#comment_editor').modal('show');
+        $('#content').attr('placeholder', '回复 ' + comment_name + ' 的内容：');
+        $('#reply').val(comment_id) //设置隐藏元素的值为评论目标的id
+    }
+</script>
+<script>
+    $('#comment_editor').on('show.bs.modal', function () {
+        $('#name').val('{{ session.name }}'); // 设置昵称为session中的昵称
+        $('#email').val('{{ session.email }}'); // 设置邮箱为session中的邮箱
+        $('#content').val('{{ session.content }}') // 设置内容为session中的内容
+    });
+    $('#comment_editor').on('hide.bs.modal', function () {
+        if ($('#prompt_message').hasClass('alert-success')) {
+            location.reload()
+        }
+    });
+    $(document).ready(function () {
+        $('#submit_comment').click(function () { // 定义回复按钮点击时调用的函数
+            $.ajaxSetup({ // 添加防止跨域攻击的代码
+                data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+            });
+            var reply = $('#reply').val(); // 将评论目标id存入变量
+            var name = $('#name').val().trim(); // 将评论人昵称存入变量
+            var email = $('#email').val(); // 将评论人邮箱地址存入变量
+            var content = $('#content').val().trim(); // 将评论内容存入变量
+            var close_str = "<a href=\"#\" class=\"close\" data-dismiss=\"alert\">&times;</a>";
+            if (name && email && content) { // 如果所有内容都已填写
+                $.post('{% url 'publish_comment' %}', { // 用post方法提交请求
+                    'article': {{ article_info.pk }}, // 请求中包含的参数字典
+                    'reply': reply,
+                    'name': name,
+                    'email': email,
+                    'content': content
+                }, function (result) { // 回调函数获取返回结果
+                    if (result['status'] >= 300) {
+                        $('#prompt_message').toggleClass('alert-warning', true).toggleClass('alert-success', false).toggleClass('alert-danger', false);
+                        $('#prompt_message').html(close_str + "<strong>警告：</strong>"+result['explain']);
+                    }
+                    else if (result['status'] >= 200) {
+                        $('#prompt_message').addClass('alert-success');
+                        $('#prompt_message').html(close_str + "<strong>成功：</strong>"+result['explain']);
+                        $("#content").val('')
+                    }
+                    else {
+                        $('#prompt_message').toggleClass('alert-danger', true).toggleClass('alert-warning', false).toggleClass('alert-success', false);
+                        $('#prompt_message').html(close_str + "<strong>错误：</strong>"+result['explain']);
+                    }
+                });
+
+            } else { // 如果不是所有内容都已填写
+                $('#prompt_message').toggleClass('alert-warning', true).toggleClass('alert-success', false).toggleClass('alert-danger', false);
+                $('#prompt_message').html(close_str + "<strong>警告：</strong>请检查信息完整性");
+            }
+        $('#prompt_message').removeClass('hidden');
+        });
+    })
 </script>
 {% endblock %}
