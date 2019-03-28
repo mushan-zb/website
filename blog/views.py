@@ -3,6 +3,7 @@ import markdown
 from django.shortcuts import render, redirect, Http404, HttpResponse
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+from django.core.mail import send_mail
 from django.db.models import Q
 
 from .models import ArticleModel, LabelModel, CommentModel
@@ -57,6 +58,7 @@ def article(request, pk):
         'email': request.session.get('email', ''),
         'content': request.session.get('content', ''),
     }
+
     article_info.content = markdown.markdown(
         article_info.content,
         extensions=[
@@ -65,7 +67,7 @@ def article(request, pk):
             'markdown.extensions.toc',
         ]
     )
-    print(comment_list)
+
     previous_article = article_info.previous_article()
     next_article = article_info.next_article()
 
@@ -109,10 +111,37 @@ def publish_comment(request):
             comment.reply = CommentModel.objects.get(pk=request.POST.get('reply'))
         form = CommentForm(request.POST, instance=comment)
 
+        url = 'https://' + request.get_host() + request.path
+
         if form.is_valid():
             try:
                 form.save()
                 request.session['content'] = ''
+                subject = '【木杉博客】 - 消息通知'
+                if comment.reply:
+                    recipient_list = [comment.reply.email]
+                    html_message = r'''
+                        <div>
+                            <span>{name} 你好</span>
+                            <span>你在木杉博客中发表的评论得到他人的回复</span>
+                            <span>评论：{comment}</span>
+                            <span>回复：{reply}</span>
+                            <span>快速查看:<a href="{url}">{url}</a>
+                        </div>
+                    '''.format(name=comment.reply.name, comment=comment.reply.content, reply=comment.content, url=url)
+                else:
+                    admin_url = 'https://' + request.get_host() + '/admin'
+                    recipient_list = ['zhenbin0212@163.com']
+                    html_message = r'''
+                        <div>
+                            <span>博客收到一条新评论</span>
+                            <span>评论：{comment}</span>
+                            <span>快速查看：<a href="{url}">{url}</a>
+                            <span>后台管理：<a href="{admin_url}">{admin_url}</a>
+                        </div>
+                    '''.format(comment=comment.content, url=url, admin_url=admin_url)
+
+                send_mail(subject=subject, recipient_list=recipient_list, html_message=html_message, fail_silently=False)
             except:
                 result['status'] = 100
                 result['explain'] = '评论失败'

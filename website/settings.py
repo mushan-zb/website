@@ -116,6 +116,14 @@ USE_L10N = True
 
 USE_TZ = False
 
+# 配置邮件服务
+
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtpdm.aliyun.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'mushan-blog@mail.mushan.top'
+EMAIL_HOST_PASSWORD = 'ZB0320smtp'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
