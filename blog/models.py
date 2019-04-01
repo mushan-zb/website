@@ -13,6 +13,7 @@ class BaseModel(models.Model):
     create_time = models.DateTimeField(verbose_name='创建时间', auto_now=True)
     modify_time = models.DateTimeField(verbose_name='最近修改时间', auto_now_add=True)
     status = models.BooleanField(verbose_name='状态', default=True, choices=STATUS)
+    address = models.GenericIPAddressField(verbose_name='IP地址')
 
     class Meta:
         abstract = True

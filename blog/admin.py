@@ -3,8 +3,8 @@ from .models import ArticleModel, LabelModel, CommentModel
 
 # Register your models here.
 
-admin.site.site_header = '木杉网站管理系统'
-admin.site.site_title = '木杉网站后台'
+# admin.site.site_header = '木杉网站管理系统'
+# admin.site.site_title = '木杉网站后台'
 
 
 def display(model_admin, request, queryset):
@@ -21,7 +21,7 @@ hide.short_description = '将选中数据显示'
 
 @admin.register(ArticleModel)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ['title', 'status', 'modify_time', 'view']
+    list_display = ['title', 'status', 'modify_time', 'view', 'address']
     list_per_page = 20
     search_fields = ['title', 'label', 'content']
     actions = [display, hide]
@@ -38,7 +38,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
 @admin.register(LabelModel)
 class LabelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'modify_time']
+    list_display = ['name', 'slug', 'modify_time', 'address']
     list_per_page = 20
     search_fields = ['name', 'slug']
     actions = [display, hide]
@@ -46,7 +46,7 @@ class LabelAdmin(admin.ModelAdmin):
 
 @admin.register(CommentModel)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['name', 'email', 'article', 'reply']
+    list_display = ['name', 'email', 'article', 'reply', 'address']
     list_per_page = 20
     search_fields = ['name', 'content', 'article', 'reply']
     actions = [display, hide]
