@@ -25,7 +25,7 @@ SECRET_KEY = 'e#&w7pcffq(jic1#99&ksc2t%aldc1dl$95-z(@kgz7&i!0xd1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -121,7 +121,7 @@ USE_TZ = False
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtpdm.aliyun.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'mushan-blog@mail.mushan.top'
+EMAIL_HOST_USER = 'email'
 EMAIL_HOST_PASSWORD = 'password'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
